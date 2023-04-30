@@ -48,6 +48,40 @@ class Board():
     
     def isOccupied(self, position: int) -> bool:
         return self.board[self.previous_square][position] == Marker.X or self.board[self.previous_square][position] == Marker.O
+    
+    @staticmethod
+    def scoreMini(miniBoard):
+        winner = Marker.EMPTY
+
+        # Rows
+        if miniBoard[0] == miniBoard[1] == miniBoard[2]:
+            winner = miniBoard[0]
+        elif miniBoard[3] == miniBoard[4] == miniBoard[5]:
+            winner = miniBoard[3]
+        elif miniBoard[6] == miniBoard[7] == miniBoard[8]:
+            winner = miniBoard[6]
+
+        # Columns
+        elif miniBoard[0] == miniBoard[3] == miniBoard[6]:
+            winner = miniBoard[0]
+        elif miniBoard[1] == miniBoard[4] == miniBoard[7]:
+            winner = miniBoard[1]
+        elif miniBoard[2] == miniBoard[5] == miniBoard[8]:
+            winner = miniBoard[2]
+
+        # Diagonals
+        elif miniBoard[0] == miniBoard[4] == miniBoard[8]:
+            winner = miniBoard[0]
+        elif miniBoard[2] == miniBoard[4] == miniBoard[6]:
+            winner = miniBoard[2]
+
+        return winner
+
+    def scoring(self):
+        miniScores = [self.scoreMini(miniBoard) for miniBoard in self.board]
+        score = self.scoreMini(miniScores)
+        return score
+
 
     def printBoard(self):
         printed_board = f" \
@@ -89,39 +123,7 @@ class Board():
         
         print(printed_board)
 
-def scoreMini(miniBoard):
-    winner = Marker.EMPTY
 
-    # Rows
-    if miniBoard[0] == miniBoard[1] == miniBoard[2]:
-        winner = miniBoard[0]
-    elif miniBoard[3] == miniBoard[4] == miniBoard[5]:
-        winner = miniBoard[3]
-    elif miniBoard[6] == miniBoard[7] == miniBoard[8]:
-        winner = miniBoard[6]
-
-    # Columns
-    elif miniBoard[0] == miniBoard[3] == miniBoard[6]:
-        winner = miniBoard[0]
-    elif miniBoard[1] == miniBoard[4] == miniBoard[7]:
-        winner = miniBoard[1]
-    elif miniBoard[2] == miniBoard[5] == miniBoard[8]:
-        winner = miniBoard[2]
-
-    # Diagonals
-    elif miniBoard[0] == miniBoard[4] == miniBoard[8]:
-        winner = miniBoard[0]
-    elif miniBoard[2] == miniBoard[4] == miniBoard[6]:
-        winner = miniBoard[2]
-
-    return winner
-
-def scoring(board):
-    miniScores = [scoreMini(miniBoard) for miniBoard in board]
-    score = scoreMini(miniScores)
-    if score != Marker.EMPTY:
-        print(f"Player {score} wins!")
-        exit()
 
 playing = True
 numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
@@ -139,7 +141,11 @@ while playing == True:
     playerInput = int(playerInput)
     board.move(playerInput)
     print("\n")
-    scoring(board.board)
+    
+    score = board.scoring()
+    if score != Marker.EMPTY:
+            print(f"Player {score} wins!")
+            exit()
 
 
 
