@@ -1,4 +1,3 @@
-from typing import Self
 from enum import Enum
 
 class Marker(Enum):
@@ -122,31 +121,34 @@ class Board():
 {self.board[8][6]} | {self.board[8][7]} | {self.board[8][8]}"
         
         print(printed_board)
+        return printed_board
 
 
-
-playing = True
-numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
-
-
-board = Board()
+def main():
+    playing = True
+    numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
 
 
-while playing == True:
-    print(f"Player {board.current_player} turn")
-    board.printBoard()
-    playerInput = input("Please choose a square: ")
-    while playerInput not in numbers or board.isOccupied(int(playerInput)):
+    board = Board()
+
+
+    while playing == True:
+        print(f"Player {board.current_player} turn")
+        board.printBoard()
         playerInput = input("Please choose a square: ")
-    playerInput = int(playerInput)
-    board.move(playerInput)
-    print("\n")
-    
-    score = board.scoring()
-    if score != Marker.EMPTY:
+        while playerInput not in numbers or board.isOccupied(int(playerInput)):
+            playerInput = input("Please choose a square: ")
+        playerInput = int(playerInput)
+        board.move(playerInput)
+        print("\n")
+        
+        score = board.scoring()
+        if score != Marker.EMPTY:
             print(f"Player {score} wins!")
             exit()
 
+if __name__ == "__main__":
+    main()
 
 
 
