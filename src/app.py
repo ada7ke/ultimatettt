@@ -18,11 +18,16 @@ def main():
     st.write(f"Player {board.current_player} turn")
     boardMarkdown = f"```\nUltimate Tic Tac Toe\n{board.printBoard()}\n```"
     st.write(boardMarkdown)
-    playerInput = st.text_input("Please choose a square: ", value="", key=f"move")
+    prompt_box = st.empty()
+
+    with prompt_box:
+        playerInput = st.text_input("Please choose a square: ", value="", key=f"move")
+    
     if len(playerInput) > 0:
-        print(f"Player input: '{playerInput}'")
+        logger.info(f"Player input: '{playerInput}'")
         if playerInput not in numbers or board.isOccupied(int(playerInput)):
             st.write("Invalid input. Please try again.")
+            logger.info(f"Invalid input: '{playerInput}'")
             return
         playerInput = int(playerInput)
         board.move(playerInput)
@@ -39,7 +44,9 @@ def main():
         
         st.write(ultimate.Board())
         # st.experimental_rerun()
-        
+    else:
+        st.write("Waiting for input...")
+        logger.info("Waiting for input...")
 
               
 

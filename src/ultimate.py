@@ -1,4 +1,6 @@
 from enum import Enum
+from loguru import logger
+
 
 class Marker(Enum):
     EMPTY = 0
@@ -37,12 +39,15 @@ class Board():
         """ Puts marker of current player at position.
             Returns true if the move is valid or false otherwise. """
         
+        logger.info(f"Player {self.current_player} attempting to move to {position}")
         if position < 0 or position > 8 or self.board[self.previous_square][position] != Marker.EMPTY:
+            logger.info("Invalid move")
             return False
 
         self.board[self.previous_square][position] = self.current_player
         self.previous_square = position
         self.current_player = Player.otherPlayer(self.current_player)
+        logger.info(f"Move successful to {position}")
         return True
     
     def isOccupied(self, position: int) -> bool:
