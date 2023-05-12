@@ -34,6 +34,7 @@ class Board():
         self.board = [[Marker.EMPTY for i in range(9)] for j in range(9)]
         self.current_player = Marker.X
         self.previous_square = 4
+        self.move_num = 0
 
     def move(self, position: int) -> bool:
         """ Puts marker of current player at position.
@@ -47,6 +48,7 @@ class Board():
         self.board[self.previous_square][position] = self.current_player
         self.previous_square = position
         self.current_player = Player.otherPlayer(self.current_player)
+        self.move_num += 1
         logger.info(f"Move successful to {position}")
         return True
     

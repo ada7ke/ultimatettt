@@ -21,10 +21,11 @@ def main():
     prompt_box = st.empty()
 
     with prompt_box:
-        playerInput = st.text_input("Please choose a square: ", value="", key=f"move")
+        playerInput = st.text_input("Please choose a square: ", key=f"move{board.move_num}")
     
+    logger.info(f"Player input: '{playerInput}'")
+
     if len(playerInput) > 0:
-        logger.info(f"Player input: '{playerInput}'")
         if playerInput not in numbers or board.isOccupied(int(playerInput)):
             st.write("Invalid input. Please try again.")
             logger.info(f"Invalid input: '{playerInput}'")
@@ -43,9 +44,8 @@ def main():
         #     return
         
         st.write(ultimate.Board())
-        # st.experimental_rerun()
+        st.experimental_rerun()
     else:
-        st.write("Waiting for input...")
         logger.info("Waiting for input...")
 
               
