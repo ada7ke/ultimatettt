@@ -1,6 +1,7 @@
 from loguru import logger
 import streamlit as st
 import ultimate
+import random
 
 # streamlit run src/app.py
 
@@ -17,8 +18,9 @@ def main():
     st.write(f"Player {board.current_player} turn")
     boardMarkdown = f"```\nUltimate Tic Tac Toe\n{board.printBoard()}\n```"
     st.write(boardMarkdown)
-    playerInput = st.text_input("Please choose a square: ", key=f"move")
+    playerInput = st.text_input("Please choose a square: ", value="", key=f"move")
     if len(playerInput) > 0:
+        print(f"Player input: '{playerInput}'")
         if playerInput not in numbers or board.isOccupied(int(playerInput)):
             st.write("Invalid input. Please try again.")
             return
@@ -35,9 +37,10 @@ def main():
         #     st.write(f"Player {score} wins!")
         #     return
         
-    st.experimental_rerun()
+        st.write(ultimate.Board())
+        # st.experimental_rerun()
         
-    st.write(ultimate.Board())
+
               
 
 if __name__ == "__main__":
