@@ -15,13 +15,16 @@ def main():
 
     numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
 
-    st.write(f"Player {board.current_player} turn")
+    st.write(f"Player {board.current_player} turn in board #{board.previous_square}")
     boardMarkdown = f"```\nUltimate Tic Tac Toe\n{board.printBoard()}\n```"
     st.write(boardMarkdown)
     prompt_box = st.empty()
 
     with prompt_box:
         playerInput = st.text_input("Please choose a square: ", key=f"move{board.move_num}")
+    
+    st.write("\n")
+    st.button("Restart", on_click=board.reset)
     
     if len(playerInput) > 0:
         logger.info(f"Player input: '{playerInput}'")
@@ -36,11 +39,11 @@ def main():
         st.write("\n")
         
 
-        # score = board.scoring()
-        # print(f"Score: '{score}'")
-        # if score != ultimate.Marker.EMPTY and score != " ":
-        #     st.write(f"Player {score} wins!")
-        #     return
+        score = board.scoring()
+        print(f"Score: '{score}'")
+        if score != ultimate.Marker.EMPTY and score != " ":
+            st.write(f"Player {score} wins!")
+            return
         
         st.write(ultimate.Board())
         st.experimental_rerun()
