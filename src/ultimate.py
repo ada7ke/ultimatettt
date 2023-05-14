@@ -1,5 +1,6 @@
-from typing import Self
 from enum import Enum
+from loguru import logger
+
 
 class Marker(Enum):
     EMPTY = 0
@@ -13,6 +14,11 @@ class Marker(Enum):
             return "O"
         else:
             return " "
+
+class MoveState(Enum):
+    INVALID = 0
+    VALID = 1
+    REPLAY = 2
 
 class Player():
     @staticmethod
@@ -30,26 +36,89 @@ class Board():
     
     def reset(self):
         """ Clears board and resets to start of game. """
-        self.board = [[Marker.EMPTY for i in range(9)] for j in range(9)]
+        self.board: list[list[Marker]] = [[Marker.EMPTY for i in range(9)] for j in range(9)]
         self.current_player = Marker.X
         self.previous_square = 4
+        self.move_num = 0
 
-    def move(self, position: int) -> bool:
+    def isMiniboardFull(self) -> bool:
+        return len([square for square in self.board[self.previous_square] if square != Marker.EMPTY]) == 9
+    
+    def fillWinner(self, miniboardID: int):
+        winner = self.scoreMini(self.board[miniboardID])
+        if winner != Marker.EMPTY:
+            for i in range(0,9):
+                if self.board[miniboardID][i] == Marker.EMPTY:
+                    self.board[miniboardID][i] = winner
+
+    def move(self, position: int) -> MoveState:
         """ Puts marker of current player at position.
             Returns true if the move is valid or false otherwise. """
         
-        if position < 0 or position > 8 or self.board[self.previous_square][position] != Marker.EMPTY:
-            return False
+        logger.info(f"Player {self.current_player} attempting to move to {position}")
+
+        if position < 0 or position > 8:
+            return MoveState.INVALID
+        
+        if self.isMiniboardFull():
+            self.previous_square = position
+            self.move_num += 1
+            return MoveState.REPLAY
+    
+        if self.board[self.previous_square][position] != Marker.EMPTY:
+            logger.info("Invalid move")
+            return MoveState.INVALID
 
         self.board[self.previous_square][position] = self.current_player
+        self.fillWinner(self.previous_square)
         self.previous_square = position
         self.current_player = Player.otherPlayer(self.current_player)
-        return True
+        self.move_num += 1
+        logger.info(f"Move successful to {position}")
+
+        return MoveState.VALID
+
+
     
     def isOccupied(self, position: int) -> bool:
         return self.board[self.previous_square][position] == Marker.X or self.board[self.previous_square][position] == Marker.O
+    
+    @staticmethod
+    def scoreMini(miniBoard: list[Marker]) -> Marker:
+        winner = Marker.EMPTY
 
-    def printBoard(self):
+        # Rows
+        if miniBoard[0] == miniBoard[1] == miniBoard[2] != Marker.EMPTY:
+            winner = miniBoard[0]
+        elif miniBoard[3] == miniBoard[4] == miniBoard[5] != Marker.EMPTY:
+            winner = miniBoard[3]
+        elif miniBoard[6] == miniBoard[7] == miniBoard[8] != Marker.EMPTY:
+            winner = miniBoard[6]
+
+        # Columns
+        elif miniBoard[0] == miniBoard[3] == miniBoard[6] != Marker.EMPTY:
+            winner = miniBoard[0]
+        elif miniBoard[1] == miniBoard[4] == miniBoard[7] != Marker.EMPTY:
+            winner = miniBoard[1]
+        elif miniBoard[2] == miniBoard[5] == miniBoard[8] != Marker.EMPTY:
+            winner = miniBoard[2]
+
+        # Diagonals
+        elif miniBoard[0] == miniBoard[4] == miniBoard[8] != Marker.EMPTY:
+            winner = miniBoard[0]
+        elif miniBoard[2] == miniBoard[4] == miniBoard[6] != Marker.EMPTY:
+            winner = miniBoard[2]
+        
+        return winner
+
+    def scoring(self) -> Marker:
+        miniScores = [self.scoreMini(miniBoard) for miniBoard in self.board]
+        logger.info(f"Mini Scores: '{miniScores}'")
+        score = self.scoreMini(miniScores)
+        return score
+
+
+    def printBoard(self) -> str:
         printed_board = f" \
 {self.board[0][0]} | {self.board[0][1]} | {self.board[0][2]} || \
 {self.board[1][0]} | {self.board[1][1]} | {self.board[1][2]} || \
@@ -88,59 +157,34 @@ class Board():
 {self.board[8][6]} | {self.board[8][7]} | {self.board[8][8]}"
         
         print(printed_board)
-
-def scoreMini(miniBoard):
-    winner = Marker.EMPTY
-
-    # Rows
-    if miniBoard[0] == miniBoard[1] == miniBoard[2]:
-        winner = miniBoard[0]
-    elif miniBoard[3] == miniBoard[4] == miniBoard[5]:
-        winner = miniBoard[3]
-    elif miniBoard[6] == miniBoard[7] == miniBoard[8]:
-        winner = miniBoard[6]
-
-    # Columns
-    elif miniBoard[0] == miniBoard[3] == miniBoard[6]:
-        winner = miniBoard[0]
-    elif miniBoard[1] == miniBoard[4] == miniBoard[7]:
-        winner = miniBoard[1]
-    elif miniBoard[2] == miniBoard[5] == miniBoard[8]:
-        winner = miniBoard[2]
-
-    # Diagonals
-    elif miniBoard[0] == miniBoard[4] == miniBoard[8]:
-        winner = miniBoard[0]
-    elif miniBoard[2] == miniBoard[4] == miniBoard[6]:
-        winner = miniBoard[2]
-
-    return winner
-
-def scoring(board):
-    miniScores = [scoreMini(miniBoard) for miniBoard in board]
-    score = scoreMini(miniScores)
-    if score != Marker.EMPTY:
-        print(f"Player {score} wins!")
-        exit()
-
-playing = True
-numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+        return printed_board
 
 
-board = Board()
+def main():
+    playing = True
+    numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
 
 
-while playing == True:
-    print(f"Player {board.current_player} turn")
-    board.printBoard()
-    playerInput = input("Please choose a square: ")
-    while playerInput not in numbers or board.isOccupied(int(playerInput)):
+    board = Board()
+
+
+    while playing == True:
+        print(f"Player {board.current_player} turn")
+        board.printBoard()
         playerInput = input("Please choose a square: ")
-    playerInput = int(playerInput)
-    board.move(playerInput)
-    print("\n")
-    scoring(board.board)
+        while playerInput not in numbers or board.isOccupied(int(playerInput)):
+            playerInput = input("Please choose a square: ")
+        playerInput = int(playerInput)
+        board.move(playerInput)
+        print("\n")
+        
+        score = board.scoring()
+        if score != Marker.EMPTY:
+            print(f"Player {score} wins!")
+            exit()
 
+if __name__ == "__main__":
+    main()
 
 
 
