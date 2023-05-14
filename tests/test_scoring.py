@@ -1,4 +1,4 @@
-from ultimate import Board
+from ultimate import Board, Marker
 from loguru import logger
 
 def test_scoring():
@@ -44,4 +44,4 @@ def test_scoring():
     logger.info(f"\n{board.printBoard()}")
 
     score = board.scoring()
-    assert score == "O"
+    assert score == Marker.O
