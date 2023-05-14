@@ -8,7 +8,7 @@ import random
 def main():
     st.set_page_config(page_title="Ultimate Tic Tac Toe", layout="wide", initial_sidebar_state="collapsed")
     if "board" in st.session_state:
-        board = st.session_state["board"]
+        board: ultimate.Board = st.session_state["board"]
     else:
         board = ultimate.Board()
         st.session_state["board"] = board
@@ -18,6 +18,12 @@ def main():
     st.write("Ultimate Tic Tac Toe")
     boardMarkdown = f"```\nPlayer {board.current_player} turn in board #{board.previous_square}\n{board.printBoard()}\n```"
     st.write(boardMarkdown)
+
+    score = board.scoring()
+    print(f"Score: '{score}'")
+    if score != ultimate.Marker.EMPTY and score != " ":
+        st.write(f"Player '{score}' wins!")
+
     prompt_box = st.empty()
 
     with prompt_box:
@@ -36,15 +42,6 @@ def main():
         st.session_state.board = board
 
         st.write("\n")
-        
-
-        score = board.scoring()
-        print(f"Score: '{score}'")
-        if score != ultimate.Marker.EMPTY and score != " ":
-            st.write(f"Player {score} wins!")
-            return
-        
-        st.write(ultimate.Board())
         st.experimental_rerun()
     else:
         logger.info("Waiting for input...")

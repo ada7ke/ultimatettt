@@ -83,14 +83,14 @@ class Board():
 
         return winner
 
-    def scoring(self):
+    def scoring(self) -> Marker:
         miniScores = [self.scoreMini(miniBoard) for miniBoard in self.board]
         logger.info(f"Mini Scores: '{miniScores}'")
         score = self.scoreMini(miniScores)
         return score
 
 
-    def printBoard(self):
+    def printBoard(self) -> str:
         printed_board = f" \
 {self.board[0][0]} | {self.board[0][1]} | {self.board[0][2]} || \
 {self.board[1][0]} | {self.board[1][1]} | {self.board[1][2]} || \
