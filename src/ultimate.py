@@ -59,6 +59,8 @@ class Board():
     def scoreMini(miniBoard: list[Marker]) -> Marker:
         winner = Marker.EMPTY
 
+        logger.info(f"miniBoard 6: '{miniBoard[6]}', miniBoard 7: '{miniBoard[7]}', miniBoard 8: '{miniBoard[8]}'")
+
         # Rows
         if miniBoard[0] == miniBoard[1] == miniBoard[2]:
             winner = miniBoard[0]
@@ -66,6 +68,7 @@ class Board():
             winner = miniBoard[3]
         elif miniBoard[6] == miniBoard[7] == miniBoard[8]:
             winner = miniBoard[6]
+            logger.info(f"Winner: '{winner}'")
 
         # Columns
         elif miniBoard[0] == miniBoard[3] == miniBoard[6]:
@@ -80,6 +83,8 @@ class Board():
             winner = miniBoard[0]
         elif miniBoard[2] == miniBoard[4] == miniBoard[6]:
             winner = miniBoard[2]
+
+        logger.info(f"Winner: '{winner}'")
 
         return winner
 
