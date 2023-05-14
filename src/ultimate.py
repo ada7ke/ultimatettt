@@ -31,7 +31,7 @@ class Board():
     
     def reset(self):
         """ Clears board and resets to start of game. """
-        self.board = [[Marker.EMPTY for i in range(9)] for j in range(9)]
+        self.board: list[list[Marker]] = [[Marker.EMPTY for i in range(9)] for j in range(9)]
         self.current_player = Marker.X
         self.previous_square = 4
         self.move_num = 0
@@ -56,7 +56,7 @@ class Board():
         return self.board[self.previous_square][position] == Marker.X or self.board[self.previous_square][position] == Marker.O
     
     @staticmethod
-    def scoreMini(miniBoard):
+    def scoreMini(miniBoard: list[Marker]) -> Marker:
         winner = Marker.EMPTY
 
         # Rows
