@@ -22,7 +22,7 @@ def main():
     score = board.scoring()
     print(f"Score: '{score}'")
     if score != ultimate.Marker.EMPTY and score != " ":
-        st.write(f"Player '{score}' wins!")
+        st.write(f"\nPlayer '{score}' wins!")
 
     prompt_box = st.empty()
 
@@ -33,12 +33,15 @@ def main():
     
     if len(playerInput) > 0:
         logger.info(f"Player input: '{playerInput}'")
-        if playerInput not in numbers or board.isOccupied(int(playerInput)):
+        if playerInput not in numbers:
             st.write("Invalid input. Please try again.")
             logger.info(f"Invalid input: '{playerInput}'")
-            return
-        playerInput = int(playerInput)
-        board.move(playerInput)
+        else:
+            result = board.move(int(playerInput))
+            if result == ultimate.MoveState.INVALID:
+                st.write("Invalid input. Please try again.")
+                logger.info(f"Invalid input: '{playerInput}'")
+            
         st.session_state.board = board
 
         st.write("\n")
@@ -46,7 +49,6 @@ def main():
     else:
         logger.info("Waiting for input...")
 
-              
 
 if __name__ == "__main__":
     main()

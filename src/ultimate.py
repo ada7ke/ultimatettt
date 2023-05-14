@@ -15,6 +15,11 @@ class Marker(Enum):
         else:
             return " "
 
+class MoveState(Enum):
+    INVALID = 0
+    VALID = 1
+    REPLAY = 2
+
 class Player():
     @staticmethod
     def otherPlayer(player: Marker) -> Marker:
@@ -36,21 +41,44 @@ class Board():
         self.previous_square = 4
         self.move_num = 0
 
-    def move(self, position: int) -> bool:
+    def isMiniboardFull(self) -> bool:
+        return len([square for square in self.board[self.previous_square] if square != Marker.EMPTY]) == 9
+    
+    def fillWinner(self, miniboardID: int):
+        winner = self.scoreMini(self.board[miniboardID])
+        if winner != Marker.EMPTY:
+            for i in range(0,9):
+                if self.board[miniboardID][i] == Marker.EMPTY:
+                    self.board[miniboardID][i] = winner
+
+    def move(self, position: int) -> MoveState:
         """ Puts marker of current player at position.
             Returns true if the move is valid or false otherwise. """
         
         logger.info(f"Player {self.current_player} attempting to move to {position}")
-        if position < 0 or position > 8 or self.board[self.previous_square][position] != Marker.EMPTY:
+
+        if position < 0 or position > 8:
+            return MoveState.INVALID
+        
+        if self.isMiniboardFull():
+            self.previous_square = position
+            self.move_num += 1
+            return MoveState.REPLAY
+    
+        if self.board[self.previous_square][position] != Marker.EMPTY:
             logger.info("Invalid move")
-            return False
+            return MoveState.INVALID
 
         self.board[self.previous_square][position] = self.current_player
+        self.fillWinner(self.previous_square)
         self.previous_square = position
         self.current_player = Player.otherPlayer(self.current_player)
         self.move_num += 1
         logger.info(f"Move successful to {position}")
-        return True
+
+        return MoveState.VALID
+
+
     
     def isOccupied(self, position: int) -> bool:
         return self.board[self.previous_square][position] == Marker.X or self.board[self.previous_square][position] == Marker.O
@@ -81,11 +109,6 @@ class Board():
         elif miniBoard[2] == miniBoard[4] == miniBoard[6] != Marker.EMPTY:
             winner = miniBoard[2]
         
-        if winner != Marker.EMPTY:
-            for i in range(0,9):
-                if miniBoard[i] == Marker.EMPTY:
-                    miniBoard[i] = winner
-
         return winner
 
     def scoring(self) -> Marker:
