@@ -80,6 +80,11 @@ class Board():
             winner = miniBoard[0]
         elif miniBoard[2] == miniBoard[4] == miniBoard[6] != Marker.EMPTY:
             winner = miniBoard[2]
+        
+        if winner != Marker.EMPTY:
+            for i in range(0,9):
+                if miniBoard[i] == Marker.EMPTY:
+                    miniBoard[i] = winner
 
         return winner
 
