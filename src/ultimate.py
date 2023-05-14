@@ -85,6 +85,7 @@ class Board():
 
     def scoring(self):
         miniScores = [self.scoreMini(miniBoard) for miniBoard in self.board]
+        logger.info(f"Mini Scores: '{miniScores}'")
         score = self.scoreMini(miniScores)
         return score
 

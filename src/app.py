@@ -15,16 +15,15 @@ def main():
 
     numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
 
-    st.write(f"Player {board.current_player} turn in board #{board.previous_square}")
-    boardMarkdown = f"```\nUltimate Tic Tac Toe\n{board.printBoard()}\n```"
+    st.write("Ultimate Tic Tac Toe")
+    boardMarkdown = f"```\nPlayer {board.current_player} turn in board #{board.previous_square}\n{board.printBoard()}\n```"
     st.write(boardMarkdown)
     prompt_box = st.empty()
 
     with prompt_box:
         playerInput = st.text_input("Please choose a square: ", key=f"move{board.move_num}")
     
-    st.write("\n")
-    st.button("Restart", on_click=board.reset)
+    st.button("\nRestart", on_click=board.reset)
     
     if len(playerInput) > 0:
         logger.info(f"Player input: '{playerInput}'")
