@@ -27,9 +27,12 @@ def main():
     prompt_box = st.empty()
 
     with prompt_box:
-        playerInput = st.text_input("Please choose a square: ", key=f"move{board.move_num}")
+        playerInput = st.text_input("Please choose a square (0-8): ", key=f"move{board.move_num}")
     
-    st.button("\nRestart", on_click=board.reset)
+    st.button("\nRestart\n", on_click=board.reset)
+
+    with st.expander("Instructions"):
+        st.write("Welcome to Ultimate Tic Tac Toe made by Ada Ke. The rules are as follows: \n- Just like regular Tic Tac Toe, you enter which square you wish to place your marker in.  \n- On the first turn, the player can only place in the middle board. Then, which ever small square that the player placed in is then reflected on the big board for the next player. For example, if the first player types '0', then the next player must play in the first board on the big board.\n- If a board is already full, the player may choose the board that they wish to play in, then will type in teh square that they choose. \n- The winner is who ever wins three small boards in a row, column, or diagonal line.")
     
     if len(playerInput) > 0:
         logger.info(f"Player input: '{playerInput}'")
