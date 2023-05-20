@@ -41,6 +41,13 @@ class Board():
         self.previous_square = 4
         self.move_num = 0
 
+    def equals(self, target_board: 'Board') -> bool:
+        return target_board.board == self.board \
+            and target_board.current_player == self.current_player \
+            and target_board.previous_square == self.previous_square \
+            and target_board.move_num == self.move_num
+        
+
     def isMiniboardFull(self) -> bool:
         return len([square for square in self.board[self.previous_square] if square != Marker.EMPTY]) == 9
     
