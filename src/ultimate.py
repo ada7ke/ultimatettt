@@ -1,5 +1,6 @@
 from enum import Enum
 from loguru import logger
+import json
 
 
 class Marker(Enum):
@@ -14,6 +15,16 @@ class Marker(Enum):
             return "O"
         else:
             return " "
+
+    @staticmethod    
+    def fromString(square: str) -> 'Marker':
+        if square == " ":
+            return Marker.EMPTY
+        elif square == "X":
+            return Marker.X
+        elif square == "O":
+            return Marker.O
+        raise Exception("Square not ' ', 'X', or 'O'")
 
 class MoveState(Enum):
     INVALID = 0
@@ -41,12 +52,46 @@ class Board():
         self.previous_square = 4
         self.move_num = 0
 
+    # def equals(self, target_board: 'Board') -> bool:
+    #     return target_board.board == self.board \
+    #         and target_board.current_player == self.current_player \
+    #         and target_board.previous_square == self.previous_square \
+    #         and target_board.move_num == self.move_num
+
     def equals(self, target_board: 'Board') -> bool:
-        return target_board.board == self.board \
-            and target_board.current_player == self.current_player \
-            and target_board.previous_square == self.previous_square \
-            and target_board.move_num == self.move_num
-        
+        return all(self.board[i][j] == target_board.board[i][j] for i in range(len(self.board)) for j in range(len(self.board[i])))\
+            and self.current_player == target_board.current_player and \
+            self.previous_square == target_board.previous_square and \
+            self.move_num == target_board.move_num
+    
+    # def serialize(self) -> str:
+    #     return json.dumps(self, default=str)
+
+    # @staticmethod
+    # def deserialize(json_input: str) -> 'Board':
+    #     return json.loads(json_input)
+
+    def serialize(self) -> str:
+        serialized_board = {
+            'board': self.board,
+            'current_player': self.current_player.value,
+            'previous_square': self.previous_square,
+            'move_num': self.move_num
+        }
+        return json.dumps(serialized_board, default=str)
+
+    @staticmethod
+    def deserialize(json_input: str) -> 'Board':
+        deserialized_board = json.loads(json_input)
+        board = Board()
+        board.board = deserialized_board['board']
+        for i in range(len(board.board)):
+            for j in range(len(board.board[i])):
+                board.board[i][j] = Marker.fromString(board.board[i][j])
+        board.current_player = Marker(deserialized_board['current_player'])
+        board.previous_square = deserialized_board['previous_square']
+        board.move_num = deserialized_board['move_num']
+        return board
 
     def isMiniboardFull(self) -> bool:
         return len([square for square in self.board[self.previous_square] if square != Marker.EMPTY]) == 9

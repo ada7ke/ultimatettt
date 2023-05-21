@@ -3,7 +3,7 @@ import streamlit as st
 import ultimate
 
 def main():
-    st.set_page_config(page_title="Ultimate Tic Tac Toe", layout="wide", initial_sidebar_state="collapsed")
+    st.set_page_config(page_title="Ultimate Tic Tac Toe", layout="centered", initial_sidebar_state="collapsed")
     if "board" in st.session_state:
         board: ultimate.Board = st.session_state["board"]
     else:
@@ -26,6 +26,7 @@ def main():
     with prompt_box:
         playerInput = st.text_input("Please choose a square (0-8): ", key=f"move{board.move_num}")
     
+    st.markdown(""" <style> button {height: auto; padding-top: 10px !important; padding-bottom: 10px !important;} </style> """, unsafe_allow_html=True)
     instructionCol, buttonCol = st.columns([4,1])
 
     with instructionCol:

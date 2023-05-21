@@ -1,4 +1,4 @@
-from ultimate import Board, Marker
+from ultimate import Board
 from loguru import logger
 
 def test_equal_boards():
