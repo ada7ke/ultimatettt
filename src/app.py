@@ -1,6 +1,7 @@
 from loguru import logger
 import streamlit as st
 import ultimate
+import sqlalchemy as db
 
 def main():
     st.set_page_config(page_title="Ultimate Tic Tac Toe", layout="centered", initial_sidebar_state="collapsed")
@@ -13,6 +14,13 @@ def main():
     numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
 
     st.header("Ultimate Tic Tac Toe - Made by Ada Ke")
+
+    engine = db.create_engine("sqlite:///database.db")
+    connection = engine.connect()
+    
+    roomIDInput = st.text_input("Enter your room ID: ", key="roomIDInput")
+    username = st.text_input("Enter your username: ", key="username")
+
     boardMarkdown = f"```\nPlayer {board.current_player} turn in board #{board.previous_square}\n{board.printBoard()}\n```"
     st.write(boardMarkdown)
 
@@ -22,7 +30,6 @@ def main():
         st.write(f"\nPlayer '{score}' wins!")
 
     prompt_box = st.empty()
-
     with prompt_box:
         playerInput = st.text_input("Please choose a square (0-8): ", key=f"move{board.move_num}")
     
