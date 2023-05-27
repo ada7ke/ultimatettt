@@ -1,11 +1,11 @@
 from ultimate import Board
 from loguru import logger
-from room_entity import RoomEntity
+from room_entity import Base, RoomEntity
 import sqlalchemy as db
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from sqlalchemy.ext.declarative import declarative_base
-import os
+from pathlib import Path
 
 def test_create_session():
     board = Board()
@@ -17,9 +17,11 @@ def test_create_session():
     board.move(1)
 
     board_str = board.serialize()
-    file_name = "database.db"
+
+    file_name = Path("database.db")
+    if file_name.exists():
+        file_name.unlink()
     engine = db.create_engine(f"sqlite:///{file_name}")
-    Base = declarative_base()
     Base.metadata.create_all(engine)
 
     with Session(engine) as session:
@@ -27,11 +29,10 @@ def test_create_session():
         session.add(room_entity)
         session.commit()
     
-    session = Session(engine)
-    
-    stmt = select(RoomEntity).where(RoomEntity.id == "test")
-    new_room_entity = session.scalar(stmt).one()
-    new_board = Board.deserialize(new_room_entity.board)
-    
-    os.remove(file_name)
+    with Session(engine) as session:
+        stmt = select(RoomEntity).where(RoomEntity.id == "test")
+        new_room_entity = session.execute(stmt).scalar()
+        new_board = Board.deserialize(new_room_entity.board)
+        
+    file_name.unlink()
     assert new_board.equals(board)
